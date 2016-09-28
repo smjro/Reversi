@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="entries_players">
+        <item>Human</item>
+        <item>Computer Level1</item>
+    </string-array>
+    <string-array name="entryValues_players">
+        <item>-1</item>
+        <item>1</item>
+    </string-array>
+</resources>

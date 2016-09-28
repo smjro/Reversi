@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/menu_pref"
+        android:id="@+id/menuPref"
+        android:orderInCategory="0"
+        android:icon="@android:drawable/ic_menu_preferences">
+    </item>
+
+    <item android:title="@string/menu_init"
+        android:id="@+id/menuInit"
+        android:orderInCategory="1"
+        android:icon="@android:drawable/ic_menu_revert">
+    </item>
+
+    <item android:title="@string/menu_exit"
+        android:id="@+id/menuExit"
+        android:orderInCategory="2"
+        android:icon="@android:drawable/ic_menu_close_clear_cancel">
+    </item>
+</menu>

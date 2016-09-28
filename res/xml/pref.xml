@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/preference_title">
+
+        <CheckBoxPreference
+            android:key="show_hints"
+            android:title="@string/pref_show_hints"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_player1">
+
+        <ListPreference
+            android:key="player1"
+            android:title="@string/pref_player1"
+            android:dialogTitle="@string/pref_dialog_player"
+            android:entries="@array/entries_players"
+            android:entryValues="@array/entryValues_players"
+            />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_player2">
+
+        <ListPreference
+            android:key="player2"
+            android:title="@string/pref_player2"
+            android:dialogTitle="@string/pref_dialog_player"
+            android:entries="@array/entries_players"
+            android:entryValues="@array/entryValues_players"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

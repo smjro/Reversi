@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Reversi</string>
+
+    <!--preference strings-->
+    <string name="menu_pref">設定</string>
+    <string name="menu_init">リセット</string>
+    <string name="menu_exit">閉じる</string>
+    <string name="preference_title">設定画面</string>
+    <string name="pref_show_hints">ヒントの表示</string>
+    <string name="pref_dialog_player">選択してください</string>
+
+    <!--you-->
+    <string name="pref_player1">you</string>
+    <string name="pref_player1_defaultValue">0</string>
+
+    <!--opponent-->
+    <string name="pref_player2">opponent</string>
+    <string name="pref_player2_defaultValue">1</string>
+</resources>
