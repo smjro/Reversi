@@ -83,7 +83,7 @@ public class ReversiView extends View {
         float cell_height = mBoard.getCellHeight();
 
         // 背景の描画
-        canvas.drawBitmap(mBitmapScreen, 0, 0, paint);
+        canvas.drawBitmap(mBitmapScreen, 0, 0, null);
         // ボードの描画
         canvas.drawBitmap(mBitmapBoard, board_left, board_top, paint);
 
