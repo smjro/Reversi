@@ -45,7 +45,7 @@ getMenuInflater().inflate(R.menu.<FILE_NAME>, menu)
 
 `/res/menu/<FILE_NAME>.xml`ここにオプションメニューの構成について記述します．
 
-### onOptionsItemSelected
+### onOptionsItemSelected（MainActivity.java）
 onCreateOptionsMenuで設定したオプションを押した時の挙動を設定できます。
 
 <img src="https://github.com/smjro/Reversi/blob/master/fig/option2.png" width="400px">
@@ -73,12 +73,13 @@ public boolean onOptionsItemSelected(MenuItem item) {
 
 [メニュー画面の作成](http://androidguide.nomaki.jp/html/menu/menuMain.html)
 
+## Activityの切替
 ### AndroidManifest
 Activityの切り替わりを可能とするための設定．ここでは，設定画面切替時の登録を行います．
 
 別Activityを用意したときは
 ```
-<activity>
+<activity
 </activity>
 ```
 を追加する必要があります．また，
@@ -88,7 +89,7 @@ Activityの切り替わりを可能とするための設定．ここでは，設
 ```
 が入ったactivityが優先して表示されます．
 
-また，Androidには，アプリのデータを保存する機能の１つとして，
+Androidには，アプリのデータを保存する機能の１つとして，
 preference（プレファレンス）という機能があります．
 
 下図は，そのpreferenceを使用して設定画面を作成したものです．
@@ -98,6 +99,58 @@ preference（プレファレンス）という機能があります．
 -- 参考　--
 
 [preferenceを使って設定画面を作成してみる - Androidアプリ開発入門 -ANDROID ROID-Androidアプリ開発入門 -ANDROID ROID-](http://androidroid.info/android/preference/83/)
+
+## 描画方法
+背景に画像を表示したり，描画する方法を説明します．
+
+このアプリでは`ReversiView`というViewを継承したクラスを作成し、
+onDrawメソッドをオーバーライドし、そこに描画に関することを
+記述しています．
+
+onDrawメソッドは，システムがViewを描画する度に呼ばれるメソッドで，
+引数のCanvasに描画した内容がViewとして表示されます．
+
+さて、本題に戻りますが主に描画には，
+- 自分で用意した画像を表示する
+- 自分で描画する
+の２種類があります．
+
+### 自分で用意した画像を表示する
+自分で用意した画像を直接表示させたい場合には`Bitmap`というものを使います．
+
+まず，
+
+```java
+Bitmap screen = BitmapFactory.decodeResource(getResources(), R.drawable.<FIG_NAME>); // 画像の読み込み
+```
+
+でresのdrawbleにある画像を読み込みます．次に，
+
+```
+mBitmapScreen = Bitmap.createScaledBitmap(screen, mwidth, mheight, true); // 幅の指定
+```
+
+リサイズを行います．携帯によって画像を表示できるサイズが
+変わってしまうので，次のようにしてviewサイズを調べます．
+
+```java
+// リソースからbitmapを作成
+DisplayMetrics dm = Resources.getSystem().getDisplayMetrics();
+
+// view範囲の幅、高さを調べる
+this.mwidth = dm.widthPixels;
+this.mheight = dm.heightPixels;
+```
+
+view範囲については[ここ](http://qiita.com/a_nishimura/items/f557138b2d67b9e1877c)を参照してください．
+
+最後に，以下で出力を行います．
+
+```java
+canvas.drawBitmap(mBitmapScreen, 0, 0, paint);
+```
+
+引数は左から，Bitmapのオブジェクト名，left，top，Paintのオブジェクト名です．
 
 ## XML
 renディレクトリ下の各xmlファイルおよびAndroidManifest.xmlの説明を行います．
