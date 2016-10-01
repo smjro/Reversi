@@ -44,4 +44,9 @@ public class Cell {
     public CELL_STATUS getStatus() {
         return status;
     }
+
+    // セルの状態を変更
+    public void changeStatus(CELL_STATUS status) {
+        this.status = status;
+    }
 }

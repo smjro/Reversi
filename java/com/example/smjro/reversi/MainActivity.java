@@ -22,12 +22,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(mReversiView);
     }
 
+    // オプションの生成
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.mainmenu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
+    // オプション選択時の動作設定
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

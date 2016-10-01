@@ -7,7 +7,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.util.DisplayMetrics;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.smjro.reversi.model.Board;
@@ -22,17 +24,17 @@ public class ReversiView extends View {
 
     private static final float CELL_RESIZE_FACTOR = 0.85f;
 
+    private Board mBoard;
+
     private Bitmap mBitmapBoard;
     private Bitmap mBitmapScreen;
     private Bitmap mBitmapBlack;
     private Bitmap mBitmapWhite;
     private Paint paint = new Paint();
-    private Board mBoard;
-
     private Paint mPaintBoarder = new Paint();
 
-    private int mwidth;
-    private int mheight;
+    private int mWidth;     // viewサイズの横幅
+    private int mHeight;    // viewサイズの縦幅
 
     public ReversiView(Context context) {
         super(context);
@@ -49,11 +51,11 @@ public class ReversiView extends View {
         DisplayMetrics dm = Resources.getSystem().getDisplayMetrics();
 
         // view範囲の幅、高さを調べる
-        this.mwidth = dm.widthPixels;
-        this.mheight = dm.heightPixels;
+        this.mWidth = dm.widthPixels;
+        this.mHeight = dm.heightPixels;
 
         // ボードのサイズを設定
-        mBoard.setSize(mwidth, mheight);
+        mBoard.setSize(mWidth, mHeight);
 
         // 初めだけbitmapを読み込む
         if (mBitmapBoard == null) {
@@ -63,6 +65,7 @@ public class ReversiView extends View {
         drawBoard(canvas);
     }
 
+    // bitmapの読み込み
     private void loadBitbap() {
 
         float cell_width = mBoard.getCellWidth();
@@ -71,7 +74,7 @@ public class ReversiView extends View {
         try {
             // screen
             Bitmap screen = BitmapFactory.decodeResource(getResources(), R.drawable.screen); // 画像の読み込み
-            mBitmapScreen = Bitmap.createScaledBitmap(screen, mwidth, mheight, true); // 幅の指定
+            mBitmapScreen = Bitmap.createScaledBitmap(screen, mWidth, mHeight, true); // 幅の指定
 
             // board
             Bitmap board = BitmapFactory.decodeResource(getResources(), R.drawable.board); // 画像の読み込み
@@ -93,6 +96,7 @@ public class ReversiView extends View {
         }
     }
 
+    // ボードの描画
     private void drawBoard(Canvas canvas) {
 
         float board_left = mBoard.getRectF().left;
@@ -105,7 +109,7 @@ public class ReversiView extends View {
         // 背景の描画
         canvas.drawBitmap(mBitmapScreen, 0, 0, null);
         // ボードの描画
-        canvas.drawBitmap(mBitmapBoard, board_left, board_top, paint);
+        canvas.drawBitmap(mBitmapBoard, board_left, board_top, null);
 
         // 縦線
         for (int i = 0; i <= Board.COLS; i++) {
@@ -128,6 +132,7 @@ public class ReversiView extends View {
         drawCells(canvas, cell_width);
     }
 
+    // セル毎に石を描画
     private void drawCells(Canvas canvas, float cell_width) {
 
         Cell[][] cells = mBoard.getCells();
@@ -137,19 +142,51 @@ public class ReversiView extends View {
                 Cell.CELL_STATUS status = cell.getStatus();
 
                 if (status != Cell.CELL_STATUS.None) {
+                    // 石の描画
                     drawStone(cell, canvas, cell_width, status);
                 }
             }
         }
     }
 
+    // 石の描画
     private void drawStone(Cell cell, Canvas canvas, float cell_width, Cell.CELL_STATUS status) {
 
         final float INSET = (cell_width * (1 - CELL_RESIZE_FACTOR))/2;
 
         Bitmap stone = (status == Cell.CELL_STATUS.Black) ? mBitmapBlack : mBitmapWhite;
         canvas.drawBitmap(stone, cell.getLeft() + INSET, cell.getTop() + INSET, null);
+    }
 
+    // タップ時の動作を設定
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
 
+        float x = event.getX();
+        float y = event.getY();
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_UP:
+                int row = (int)(y / mBoard.getCellHeight());    // 座標を対応するセルの行に変換
+                int col = (int)(x / mBoard.getCellWidth());     // 座標を対応するセルの列に変換
+                // ボードの範囲外は無視
+                if (row < Board.ROWS && col < Board.COLS && row >= 0 && col >= 0) {
+                    move(new Point(col, row));
+                }
+        }
+        return true;
+    }
+
+    private void move(final Point point) {
+
+        Cell touchedCell = mBoard.getCell(point);
+
+        if (touchedCell.getStatus() == Cell.CELL_STATUS.None) {
+            // タップした座標に対応するセルの情報を取得
+            mBoard.changeCell(point, mBoard.getTurn());
+            mBoard.changeTurn(mBoard.getTurn());
+        }
+
+        invalidate();
     }
 }

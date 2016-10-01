@@ -1,5 +1,6 @@
 package com.example.smjro.reversi.model;
 
+import android.graphics.Point;
 import android.graphics.RectF;
 
 import com.example.smjro.reversi.Utils;
@@ -69,11 +70,39 @@ public class Board {
         return this.rectF.height() / (float)ROWS;
     }
 
+    // ボードのサイズ取得
     public RectF getRectF() {
         return this.rectF;
     }
 
+    // 全セルの情報を取得
     public Cell[][] getCells() {
         return cells;
+    }
+
+    // セルの情報を取得
+    public Cell getCell(Point point) {
+        return cells[point.y][point.x];
+    }
+
+    // 現在のターンを取得
+    public Cell.CELL_STATUS getTurn() {
+        return turn;
+    }
+
+    // セルの状態を変更
+    public void changeCell(Point point, Cell.CELL_STATUS status) {
+
+        Cell cell = cells[point.y][point.x];
+        cell.changeStatus(status);
+    }
+
+    // ターンの変更
+    public void changeTurn(Cell.CELL_STATUS turn) {
+        if (this.turn == Cell.CELL_STATUS.Black) {
+            this.turn = Cell.CELL_STATUS.White;
+        } else {
+            this.turn = Cell.CELL_STATUS.Black;
+        }
     }
 }
