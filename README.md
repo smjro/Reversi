@@ -89,6 +89,11 @@ Activityの切り替わりを可能とするための設定．ここでは，設
 ```
 が入ったactivityが優先して表示されます．
 
+また別のアクティビティが起動した時，データを保存しなければ
+そのデータは失われてしまいます．本アプリで例えると，対戦中に
+電話が掛かってきたときデータが保存されなければ，対戦データは
+失われてしまいます．
+
 Androidには，アプリのデータを保存する機能の１つとして，
 preference（プレファレンス）という機能があります．
 
@@ -102,6 +107,27 @@ preference（プレファレンス）という機能があります．
 
 ## 描画方法
 背景に画像を表示したり，描画する方法を説明します．
+
+### ReversiView
+---
+オセロの表示処理を行います。
+
+グラフィクス描画に使用するクラスは、一般的に「View」クラスのサブクラスとして作成します。Viewとは画面に表示される部品（androidでいうウィジェット的なもの？）の基本となるクラスです。この組み込みはActivityクラスで「setContentView」を使って行います。
+
+雛形として次の様な形で定義されることが多いようです。今回も以下の形にならっています。
+
+``` java
+class クラス extends View {
+  public コンストラクタ(Context context) {
+    super(context);
+    ……初期化処理……
+  }
+  
+  public void onDraw(Canvas c){
+    ……描画の処理……
+  }
+}
+```
 
 このアプリでは`ReversiView`というViewを継承したクラスを作成し、
 onDrawメソッドをオーバーライドし、そこに描画に関することを
@@ -169,6 +195,7 @@ canvas.drawBitmap(mBitmapScreen, 0, 0, paint);
 それぞれの使い方は以下を参照ください．
 
 -- 参考 --
+
 [AndroidのCanvasを使いこなす！ - 基本的な描画](https://tech.recruit-mp.co.jp/mobile/remember_canvas1/)
 
 ## XML
@@ -234,26 +261,6 @@ Activityから他のActivityを呼び出すためには，Intentを作成し`sta
 -- 参考記事 --
 
 [http://qiita.com/ymotongpoo/items/d8a054f6fc93d069cb37](http://qiita.com/ymotongpoo/items/d8a054f6fc93d069cb37)
-
-## ReversiView
-オセロの表示処理を行います。
-
-グラフィクス描画に使用するクラスは、一般的に「View」クラスのサブクラスとして作成します。Viewとは画面に表示される部品（androidでいうウィジェット的なもの？）の基本となるクラスです。この組み込みはActivityクラスで「setContentView」を使って行います。
-
-雛形として次の様な形で定義されることが多いようです。今回も以下の形にならっています。
-
-``` java
-class クラス extends View {
-  public コンストラクタ(Context context) {
-    super(context);
-    ……初期化処理……
-  }
-  
-  public void onDraw(Canvas c){
-    ……描画の処理……
-  }
-}
-```
 
 ## Cell
 リバーシ上のセルを設定

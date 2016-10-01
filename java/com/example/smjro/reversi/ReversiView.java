@@ -11,6 +11,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 
 import com.example.smjro.reversi.model.Board;
+import com.example.smjro.reversi.model.Cell;
 
 
 /**
@@ -19,8 +20,12 @@ import com.example.smjro.reversi.model.Board;
 
 public class ReversiView extends View {
 
+    private static final float CELL_RESIZE_FACTOR = 0.85f;
+
     private Bitmap mBitmapBoard;
     private Bitmap mBitmapScreen;
+    private Bitmap mBitmapBlack;
+    private Bitmap mBitmapWhite;
     private Paint paint = new Paint();
     private Board mBoard;
 
@@ -60,6 +65,9 @@ public class ReversiView extends View {
 
     private void loadBitbap() {
 
+        float cell_width = mBoard.getCellWidth();
+        float cell_height = mBoard.getCellHeight();
+
         try {
             // screen
             Bitmap screen = BitmapFactory.decodeResource(getResources(), R.drawable.screen); // 画像の読み込み
@@ -68,6 +76,18 @@ public class ReversiView extends View {
             // board
             Bitmap board = BitmapFactory.decodeResource(getResources(), R.drawable.board); // 画像の読み込み
             mBitmapBoard = Bitmap.createScaledBitmap(board, (int)mBoard.getRectF().width(), (int)mBoard.getRectF().height(), true); // 幅の指定
+        } catch (Exception ex) {
+            Utils.d(ex.getMessage());
+        }
+
+        try {
+            // 黒
+            Bitmap black = BitmapFactory.decodeResource(getResources(), R.drawable.black);
+            mBitmapBlack = Bitmap.createScaledBitmap(black, (int)(cell_width*CELL_RESIZE_FACTOR), (int)(cell_height*CELL_RESIZE_FACTOR), true);
+
+            // 白
+            Bitmap white = BitmapFactory.decodeResource(getResources(), R.drawable.white);
+            mBitmapWhite = Bitmap.createScaledBitmap(white, (int)(cell_width*CELL_RESIZE_FACTOR), (int)(cell_height*CELL_RESIZE_FACTOR), true);
         } catch (Exception ex) {
             Utils.d(ex.getMessage());
         }
@@ -103,6 +123,33 @@ public class ReversiView extends View {
         canvas.drawCircle(board_left + 6*cell_width, board_top + 2*cell_height, 10f, paint);
         canvas.drawCircle(board_left + 2*cell_width, board_top + 6*cell_height, 10f, paint);
         canvas.drawCircle(board_left + 6*cell_width, board_top + 6*cell_height, 10f, paint);
+
+        // セルの状態を描画
+        drawCells(canvas, cell_width);
+    }
+
+    private void drawCells(Canvas canvas, float cell_width) {
+
+        Cell[][] cells = mBoard.getCells();
+        for (int i = 0; i < Board.ROWS; i++) {
+            for (int j = 0; j < Board.COLS; j++) {
+                Cell cell = cells[i][j];
+                Cell.CELL_STATUS status = cell.getStatus();
+
+                if (status != Cell.CELL_STATUS.None) {
+                    drawStone(cell, canvas, cell_width, status);
+                }
+            }
+        }
+    }
+
+    private void drawStone(Cell cell, Canvas canvas, float cell_width, Cell.CELL_STATUS status) {
+
+        final float INSET = (cell_width * (1 - CELL_RESIZE_FACTOR))/2;
+
+        Bitmap stone = (status == Cell.CELL_STATUS.Black) ? mBitmapBlack : mBitmapWhite;
+        canvas.drawBitmap(stone, cell.getLeft() + INSET, cell.getTop() + INSET, null);
+
 
     }
 }

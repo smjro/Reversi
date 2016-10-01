@@ -25,11 +25,23 @@ public class Cell {
         this.status = status;
     }
 
+    public float getLeft() {
+        return rectF.left;
+    }
+
+    public float getTop() {
+        return rectF.top;
+    }
+
     // セルの位置
     public void setPosition(float left, float top, float width, float height) {
         this.rectF.left = left;
         this.rectF.top = top;
         this.rectF.right = this.rectF.left + width;
         this.rectF.bottom = this.rectF.top + height;
+    }
+
+    public CELL_STATUS getStatus() {
+        return status;
     }
 }

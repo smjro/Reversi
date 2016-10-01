@@ -72,4 +72,8 @@ public class Board {
     public RectF getRectF() {
         return this.rectF;
     }
+
+    public Cell[][] getCells() {
+        return cells;
+    }
 }
