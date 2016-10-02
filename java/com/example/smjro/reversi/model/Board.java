@@ -3,8 +3,6 @@ package com.example.smjro.reversi.model;
 import android.graphics.Point;
 import android.graphics.RectF;
 
-import com.example.smjro.reversi.Utils;
-
 /**
  * Created by smjro on 16/09/27.
  */
@@ -22,7 +20,7 @@ public class Board {
     public Board() {
         for (int i = 0; i < ROWS; i++ ) {
             for (int j = 0; j < COLS; j++) {
-                cells[i][j] = new Cell();
+                cells[i][j] = new Cell(this, new Point(j, i));
             }
         }
 
@@ -34,6 +32,9 @@ public class Board {
 
         // 初めのターンに黒を設定
         turn = Cell.CELL_STATUS.Black;
+
+        // 置けるセルの数を計算
+        setAllReversibleCells();
     }
 
     // ボードのサイズを設定
@@ -104,5 +105,26 @@ public class Board {
         } else {
             this.turn = Cell.CELL_STATUS.Black;
         }
+    }
+
+    private int setAllReversibleCells() {
+
+        int n = 0;  // 設置可能なセルの数
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j <COLS; j++) {
+                Cell cell = cells[i][j];
+
+                if (cell.getStatus() == Cell.CELL_STATUS.None){
+                    Cell.CELL_STATUS opponent = cell.getOpponentStatus(this.turn);
+                    cell.setReversibleCells(this.turn, opponent);
+                }
+
+                if (cell.getReversibleCells().size() > 0) {
+                    n++;
+                }
+            }
+        }
+
+        return n;
     }
 }

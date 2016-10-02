@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.example.smjro.reversi.model.Cell;
 public class ReversiView extends View {
 
     private static final float CELL_RESIZE_FACTOR = 0.85f;
+    private static final float HINTS_SIZE_FACTOR = 0.1f;
 
     private Board mBoard;
 
@@ -32,6 +34,8 @@ public class ReversiView extends View {
     private Bitmap mBitmapWhite;
     private Paint paint = new Paint();
     private Paint mPaintBoarder = new Paint();
+    private Paint mPaintHintsBlack = new Paint();
+    private Paint mPaintHintsWhite = new Paint();
 
     private int mWidth;     // viewサイズの横幅
     private int mHeight;    // viewサイズの縦幅
@@ -42,6 +46,16 @@ public class ReversiView extends View {
         mBoard = new Board();
 
         mPaintBoarder.setColor(Color.rgb(0,0,0));
+        mPaintHintsBlack.setColor(Color.BLACK);
+        mPaintHintsWhite.setColor(Color.WHITE);
+
+        // アンチエイリアス。縁を滑らかにする
+        mPaintHintsBlack.setAntiAlias(true);
+        mPaintHintsWhite.setAntiAlias(true);
+
+        // 透明度
+        mPaintHintsBlack.setAlpha(50);
+        mPaintHintsWhite.setAlpha(50);
     }
 
     @Override
@@ -141,10 +155,13 @@ public class ReversiView extends View {
                 Cell cell = cells[i][j];
                 Cell.CELL_STATUS status = cell.getStatus();
 
-                if (status != Cell.CELL_STATUS.None) {
+                if (status == Cell.CELL_STATUS.None) {
+                    drawHints(canvas, cell, cell_width);
+                } else {
                     // 石の描画
                     drawStone(cell, canvas, cell_width, status);
                 }
+
             }
         }
     }
@@ -156,6 +173,18 @@ public class ReversiView extends View {
 
         Bitmap stone = (status == Cell.CELL_STATUS.Black) ? mBitmapBlack : mBitmapWhite;
         canvas.drawBitmap(stone, cell.getLeft() + INSET, cell.getTop() + INSET, null);
+    }
+
+    private void drawHints(Canvas canvas, Cell cell, float cell_width) {
+
+        if (cell.getReversibleCells().size() == 0) {
+            return;
+        }
+
+        // 小さな丸をヒントとして表示
+        float hints_size = cell_width * HINTS_SIZE_FACTOR;
+        Paint hints = mBoard.getTurn() == Cell.CELL_STATUS.Black ? mPaintHintsBlack : mPaintHintsWhite;
+        canvas.drawCircle(cell.getCenterX(), cell.getCenterY(), hints_size, hints);
     }
 
     // タップ時の動作を設定
