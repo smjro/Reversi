@@ -3,6 +3,9 @@ package com.example.smjro.reversi.model;
 import android.graphics.Point;
 import android.graphics.RectF;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+
 /**
  * Created by smjro on 16/09/27.
  */
@@ -95,6 +98,12 @@ public class Board {
     public void changeCell(Point point, Cell.CELL_STATUS status) {
 
         Cell cell = cells[point.y][point.x];
+        ArrayList<Cell> list = cell.getReversibleCells();   // 反転可能なセルリスト
+
+        for (Cell cell2 : list) {
+            cell2.setStatus(status);
+        }
+
         cell.changeStatus(status);
     }
 
@@ -107,13 +116,14 @@ public class Board {
         }
     }
 
-    private int setAllReversibleCells() {
+    public int setAllReversibleCells() {
 
         int n = 0;  // 設置可能なセルの数
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j <COLS; j++) {
                 Cell cell = cells[i][j];
 
+                // ひっくり返せるセルを探す
                 if (cell.getStatus() == Cell.CELL_STATUS.None){
                     Cell.CELL_STATUS opponent = cell.getOpponentStatus(this.turn);
                     cell.setReversibleCells(this.turn, opponent);

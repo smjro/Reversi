@@ -202,6 +202,8 @@ public class ReversiView extends View {
                 if (row < Board.ROWS && col < Board.COLS && row >= 0 && col >= 0) {
                     move(new Point(col, row));
                 }
+                break;
+            default:
         }
         return true;
     }
@@ -210,10 +212,16 @@ public class ReversiView extends View {
 
         Cell touchedCell = mBoard.getCell(point);
 
+        // ひっくり返せるセル以外は処理しない
+        if (touchedCell.getReversibleCells().size() == 0) {
+            return;
+        }
+
         if (touchedCell.getStatus() == Cell.CELL_STATUS.None) {
-            // タップした座標に対応するセルの情報を取得
+            // タップしたセル及び挟んだセルをひっくり返す
             mBoard.changeCell(point, mBoard.getTurn());
             mBoard.changeTurn(mBoard.getTurn());
+            mBoard.setAllReversibleCells();
         }
 
         invalidate();
