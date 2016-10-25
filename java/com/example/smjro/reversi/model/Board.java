@@ -12,12 +12,14 @@ import java.util.ArrayList;
 
 public class Board {
 
-    public static final int COLS = 8;
-    public static final int ROWS = 8;
+    public static final int COLS = 8;   // 行
+    public static final int ROWS = 8;   // 列
 
     private Cell cells[][] = new Cell[ROWS][COLS];
     private Cell.CELL_STATUS turn;
     private RectF rectF = new RectF();
+    private Player player1;
+    private Player player2;
 
     // コンストラクタ
     public Board() {
@@ -136,5 +138,45 @@ public class Board {
         }
 
         return n;
+    }
+
+    public void setPlayer1(Player player1) {
+        this.player1 = player1;
+    }
+
+    public void setPlayer2(Player player2) {
+        this.player2 = player2;
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public Player getPlayer2() {
+        return player2;
+    }
+
+    public Player getCurrentPlayer() {
+        Player p = null;
+        if (turn == Cell.CELL_STATUS.Black) {
+            p = player1;
+        } else if (turn == Cell.CELL_STATUS.White) {
+            p = player2;
+        }
+        return p;
+    }
+
+    // 石が置けるリストを返す
+    public ArrayList<Cell> getSetPossibleCells() {
+
+        ArrayList<Cell> set_possible_cells = new ArrayList<Cell>();
+        for (int i = 0; i < ROWS; i++) {
+            for (int j = 0; j < COLS; j++) {
+                if (cells[i][j].getReversibleCells().size() > 0) {
+                    set_possible_cells.add(cells[i][j]);
+                }
+            }
+        }
+        return set_possible_cells;
     }
 }

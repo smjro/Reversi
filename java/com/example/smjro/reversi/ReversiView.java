@@ -15,13 +15,15 @@ import android.view.View;
 
 import com.example.smjro.reversi.model.Board;
 import com.example.smjro.reversi.model.Cell;
+import com.example.smjro.reversi.model.IPlayerCallback;
+import com.example.smjro.reversi.model.Player;
 
 
 /**
  * Created by smjro on 16/09/27.
  */
 
-public class ReversiView extends View {
+public class ReversiView extends View implements IPlayerCallback{
 
     private static final float CELL_RESIZE_FACTOR = 0.85f;
     private static final float HINTS_SIZE_FACTOR = 0.1f;
@@ -30,24 +32,32 @@ public class ReversiView extends View {
 
     private Bitmap mBitmapBoard;
     private Bitmap mBitmapScreen;
+    private Bitmap mBitmapStatus;
     private Bitmap mBitmapBlack;
     private Bitmap mBitmapWhite;
     private Paint paint = new Paint();
     private Paint mPaintBoarder = new Paint();
     private Paint mPaintHintsBlack = new Paint();
     private Paint mPaintHintsWhite = new Paint();
+    private Paint mPaintText = new Paint();
 
     private int mWidth;     // viewサイズの横幅
     private int mHeight;    // viewサイズの縦幅
 
+
+    // コンストラクタ
     public ReversiView(Context context) {
         super(context);
 
-        mBoard = new Board();
+        mBoard = new Board();   // インスタンス生成
 
-        mPaintBoarder.setColor(Color.rgb(0,0,0));
-        mPaintHintsBlack.setColor(Color.BLACK);
-        mPaintHintsWhite.setColor(Color.WHITE);
+        mBoard.setPlayer1(Player.getPlayer1(getContext(), mBoard, Cell.CELL_STATUS.Black));
+        mBoard.setPlayer2(Player.getPlayer2(getContext(), mBoard, Cell.CELL_STATUS.White));
+
+        mPaintBoarder.setColor(Color.rgb(0,0,0));   // 黒
+        mPaintHintsBlack.setColor(Color.BLACK);     // 黒
+        mPaintHintsWhite.setColor(Color.WHITE);     // 白
+        mPaintText.setColor(Color.WHITE);           // 白
 
         // アンチエイリアス。縁を滑らかにする
         mPaintHintsBlack.setAntiAlias(true);
@@ -61,29 +71,28 @@ public class ReversiView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
 
-        // リソースからbitmapを作成
-        DisplayMetrics dm = Resources.getSystem().getDisplayMetrics();
-
         // view範囲の幅、高さを調べる
-        this.mWidth = dm.widthPixels;
-        this.mHeight = dm.heightPixels;
+        this.mWidth = getWidth();
+        this.mHeight = getHeight();
 
         // ボードのサイズを設定
         mBoard.setSize(mWidth, mHeight);
 
         // 初めだけbitmapを読み込む
         if (mBitmapBoard == null) {
-            loadBitbap();
+            loadBitmap();
         }
         // ボードの描画
         drawBoard(canvas);
     }
 
     // bitmapの読み込み
-    private void loadBitbap() {
+    private void loadBitmap() {
 
         float cell_width = mBoard.getCellWidth();
         float cell_height = mBoard.getCellHeight();
+        float statusBar_width = (mBoard.getRectF().width() - mBoard.getRectF().left)*0.5f;
+        float statusBar_height = this.mHeight - mBoard.getRectF().height() - mBoard.getRectF().top*4;
 
         try {
             // screen
@@ -105,6 +114,15 @@ public class ReversiView extends View {
             // 白
             Bitmap white = BitmapFactory.decodeResource(getResources(), R.drawable.white);
             mBitmapWhite = Bitmap.createScaledBitmap(white, (int)(cell_width*CELL_RESIZE_FACTOR), (int)(cell_height*CELL_RESIZE_FACTOR), true);
+        } catch (Exception ex) {
+            Utils.d(ex.getMessage());
+        }
+
+        try {
+            // ステータスボード
+            Bitmap status = BitmapFactory.decodeResource(getResources(), R.drawable.board);
+            mBitmapStatus = Bitmap.createScaledBitmap(status, (int)(statusBar_width), (int)(statusBar_height), true);
+
         } catch (Exception ex) {
             Utils.d(ex.getMessage());
         }
@@ -144,6 +162,9 @@ public class ReversiView extends View {
 
         // セルの状態を描画
         drawCells(canvas, cell_width);
+
+        // ステータスバー
+        drawStatus(canvas);
     }
 
     // セル毎に石を描画
@@ -164,6 +185,22 @@ public class ReversiView extends View {
 
             }
         }
+    }
+
+    // ステータスバーの表示
+    private void drawStatus(Canvas canvas) {
+
+        float board_left = mBoard.getRectF().left;
+        float board_top = mBoard.getRectF().top*3 + mBoard.getRectF().height();
+        float statusBar_width = (mBoard.getRectF().width() + mBoard.getRectF().left)*0.5f;
+
+        canvas.drawBitmap(mBitmapStatus, board_left, board_top, null);
+        canvas.drawBitmap(mBitmapStatus, board_left + statusBar_width, board_top, null);
+
+        // 各プレイヤーの名前を表示
+//        int font_size_name = getResources().getDimensionPixelSize(R.dimen.font_size_name);
+//        mPaintText.setTextSize(font_size_name);
+//        canvas.drawText(mBoard.getPlayer1().getName());
     }
 
     // 石の描画
@@ -200,7 +237,10 @@ public class ReversiView extends View {
                 int col = (int)(x / mBoard.getCellWidth());     // 座標を対応するセルの列に変換
                 // ボードの範囲外は無視
                 if (row < Board.ROWS && col < Board.COLS && row >= 0 && col >= 0) {
-                    move(new Point(col, row));
+                    Player player = mBoard.getCurrentPlayer();
+                    if (player != null && player.isHuman()) {
+                        move(new Point(col, row));
+                    }
                 }
                 break;
             default:
@@ -221,9 +261,32 @@ public class ReversiView extends View {
             // タップしたセル及び挟んだセルをひっくり返す
             mBoard.changeCell(point, mBoard.getTurn());
             mBoard.changeTurn(mBoard.getTurn());
-            mBoard.setAllReversibleCells();
+            int num_available_cell = mBoard.setAllReversibleCells();
+            if (num_available_cell == 0) {
+                mBoard.changeTurn(mBoard.getTurn());
+                mBoard.setAllReversibleCells();
+            }
         }
 
         invalidate();
+
+        // 次のプレイヤーに順番を渡す
+        callPlayer();
+    }
+
+    private void callPlayer() {
+
+        Player player = mBoard.getCurrentPlayer();
+        if (player != null && !player.isHuman()) {
+            player.startThinking(this);
+        }
+    }
+
+    @Override
+    public void onEndThinking(final Point pos) {
+        if (pos == null) return;
+        if (pos.y < 0 || pos.x < 0) return;
+
+        move(pos);
     }
 }

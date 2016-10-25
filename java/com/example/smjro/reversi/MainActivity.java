@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     // オプションの生成
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
+        Utils.d("OptionsMenu.onCreate");
         getMenuInflater().inflate(R.menu.mainmenu, menu);
         return super.onCreateOptionsMenu(menu);
     }

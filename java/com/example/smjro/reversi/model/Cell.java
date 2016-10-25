@@ -23,7 +23,7 @@ public class Cell {
     private RectF rectF = new RectF();
     private Point point = new Point();
 
-    // 設置可能なセルリスト
+    // 裏返されるセルリスト
     private ArrayList<Cell> mReversibleCells = new ArrayList<Cell>();
 
     public Cell(Board board, Point point){
@@ -49,6 +49,10 @@ public class Cell {
 
     public float getCenterY() {
         return this.rectF.centerY();
+    }
+
+    public Point getPoint() {
+        return this.point;
     }
 
     // セルの位置
@@ -91,8 +95,11 @@ public class Cell {
                     int n = getCellLine(j, i, opponent, list);
                     if (n > 0) {
                         Cell cell = getNextCell(j * (n+1), i * (n+1));
-                        if (cell.getStatus() == now_turn) {
-                            mReversibleCells.addAll(list);
+                        // board外を考慮
+                        if (cell != null) {
+                            if (cell.getStatus() == now_turn) {
+                                mReversibleCells.addAll(list);
+                            }
                         }
                     }
                 }
