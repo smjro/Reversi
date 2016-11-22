@@ -261,6 +261,7 @@ public class ReversiView extends View implements IPlayerCallback{
             // タップしたセル及び挟んだセルをひっくり返す
             mBoard.changeCell(point, mBoard.getTurn());
             mBoard.changeTurn(mBoard.getTurn());
+
             int num_available_cell = mBoard.setAllReversibleCells();
             if (num_available_cell == 0) {
                 mBoard.changeTurn(mBoard.getTurn());

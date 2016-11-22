@@ -1,11 +1,9 @@
 # Reversi
 androidのappとしてリバーシを開発してみるリポジトリ
 
-コードについても備忘録として残していく
-
 ## 環境
-Android Studio（以下AS）
-ASで使用しているemu: Nexus 5X API 23
+- Android Studio（以下AS）
+- ASで使用しているemu: Nexus 5X API 23
 
 ## Androidアプリ開発の基本
 Androidのアプリ開発では，javaクラスとxmlファイルを記述します．
@@ -51,7 +49,7 @@ onCreateOptionsMenuで設定したオプションを押した時の挙動を設�
 <img src="https://github.com/smjro/Reversi/blob/master/fig/option2.png" width="400px">
 
 上図はオプションボタンを押した時の表示で，onCreateOptionsMenuで設定した
-項目が表示されています．さらに各項目を選択したときの挙動をここで設定します．
+項目が表示されています．各項目を選択したときの挙動をここで設定します．
 
 ```java
 @Override

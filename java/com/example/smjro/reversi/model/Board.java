@@ -129,10 +129,10 @@ public class Board {
                 if (cell.getStatus() == Cell.CELL_STATUS.None){
                     Cell.CELL_STATUS opponent = cell.getOpponentStatus(this.turn);
                     cell.setReversibleCells(this.turn, opponent);
-                }
 
-                if (cell.getReversibleCells().size() > 0) {
-                    n++;
+                    if (cell.getReversibleCells().size() > 0) {
+                        n++;
+                    }
                 }
             }
         }
